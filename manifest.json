@@ -17,9 +17,9 @@
     {
       "matches": ["<all_urls>"],
       "js": [
-        "src/lib/jquery-3.6.0.min.js",  
+        "src/lib/jquery-3.6.0.min.js",
         "src/lib/annotator-full.min.js",
-        "src/content/contentScript.js"
+        "dist/contentScript.bundle.js"
       ],
       "css": [
         "src/styles/global.css",

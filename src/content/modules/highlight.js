@@ -5,6 +5,7 @@ import {
     findTextNode,
     rangesIntersect
 } from './utils.js';
+import { removeHighlightFromStorageById } from './storage.js';
 
 /**
  * ---------------------------------------------------------------------------
@@ -72,8 +73,7 @@ export function removeHighlight(range) {
     highlightSpans.forEach(span => {
         const highlightId = span.getAttribute('data-highlight-id') || null;
         if (highlightId) {
-            // removeHighlightFromStorageById is stored in storage.js
-            // We'll call it from the content script or wherever you handle cross-module
+            removeHighlightFromStorageById(highlightId);
         }
         const parent = span.parentNode;
         while (span.firstChild) {

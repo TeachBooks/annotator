@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annotation Sidebar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/annotator/1.2.13/annotator.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+   
+    <style>
+        /* Your CSS will go here */
+    </style>
+    <script src="src/lib/jquery-3.6.0.min.js"></script>
+    <script type="module" src="src/content/sidebar/js/annotations.js"></script>
+    <script type="module" src="src/content/sidebar/js/highlighting.js"></script>
+    <script type="module" src="src/content/sidebar/js/sidebar.js"></script>
+    <script type="module" src="src/content/sidebar/js/annotationSidebar.js"></script>
+    <script type="module" src="src/content/sidebar/js/notes.js"></script>
+    <script type="module" src="src/content/sidebar/js/storageManager.js"></script>
+    <script type="module" src="src/storage/storageManager.js"></script>
+    
+</head>
+<body>
+    <div id="annotation-container" class="annotation-container">
+        <div id="top-bar" class="top-bar">
+            <button id="toggle-sidebar-button" class="toggle-sidebar-button">
+                <i class="fas fa-chevron-left"></i> <!-- Icon for toggling sidebar -->
+            </button>
+            <div id="annotator-logo" class="top-bar-logo">
+                <!-- The img tag will be added via JavaScript -->
+            </div>
+            <div id="annotator-title" class="top-bar-title">
+                Local Annotator
+            </div>
+            <!-- <button onclick="exportHighlights()">Export Highlights</button>
+            <input type="file" id="import-file" onchange="importHighlights(event)"> -->
+            <div id="top-bar-icons" class="top-bar-icons">
+                <button id="search-button" class="top-bar-button">
+                    <i  class="fas fa-search"></i> <!-- Search Icon -->
+                </button>
+                <button class="top-bar-button">
+                    <i class="fas fa-sort"></i> <!-- Sort by Icon -->
+                </button>
+                <button class="top-bar-button">
+                    <i class="fas fa-share-alt"></i> <!-- Share Icon -->
+                </button>
+                <button class="top-bar-button">
+                    <i class="fas fa-question-circle"></i> <!-- Help Icon -->
+                </button>
+                <button class="top-bar-button">
+                    <i class="fas fa-user"></i> <!-- User Icon -->
+                </button>
+                <input type="text" id="search-input" class="search-input" placeholder="Search Annotations..." >
+
+            </div>
+        </div>
+    </div>
+    
+        <div id="annotation-sidebar" class="sidebar">
+            <div class="annotation-header">
+                <div class="sidebar-nav">
+                    <span id="annotations-tab" class="active-tab">Annotations</span>
+                    <!-- <span id="page-notes-tab">Page Notes</span> -->
+                </div>
+            </div>
+            <div id="annotations-container" class="annotation-content">
+                <!-- Annotations content will be displayed here -->
+            </div>
+            <div id="page-notes-container" class="annotation-content" style="display: none;">
+                <textarea id="page-notes-editor" placeholder="Enter your notes about this page"></textarea>
+                <button id="save-page-notes" class="save-button">Save Notes</button>
+            </div>
+            <div id="editor-container" class="editor-container">
+                <div class="annotation-text">
+                    
+                    <a href="#" class="more-link">More</a>
+                </div>
+                <div id="editor-toolbar" class="editor-toolbar">
+                    <button class="toolbar-button" data-command="bold">
+                        <i class="fas fa-bold"></i>
+                    </button>
+                    <button class="toolbar-button" data-command="italic">
+                        <i class="fas fa-italic"></i>
+                    </button>
+                    <button class="toolbar-button" data-command="formatBlock" value="blockquote">
+                        <i class="fas fa-quote-right"></i>
+                    </button>
+                    <button class="toolbar-button" data-command="createLink">
+                        <i class="fas fa-link"></i>
+                    </button>
+                    <button class="toolbar-button" data-command="insertImage">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <button class="toolbar-button">
+                        <i class="fas fa-square-root-alt"></i>
+                    </button>
+                    <button class="toolbar-button" data-command="insertOrderedList">
+                        <i class="fas fa-list-ol"></i>
+                    </button>
+                    <button class="toolbar-button" data-command="insertUnorderedList">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                    <button class="toolbar-button">
+                        <i class="fas fa-question"></i>
+                    </button>
+                    <span id="preview-button" class="toolbar-button">Preview</span>
+                </div>
+                <div id="annotation-editor" contenteditable="true" class="annotation-editor">
+                    <p class="user-comment" contenteditable="true" placeholder="Enter comment"></p>
+                </div>
+                <!-- <input type="text" id="tag-input" class="tag-input" placeholder="Add new tags"> -->
+                <div class="save-button-container">
+                    <button id="save-button" class="save-button">Save</button>
+                    <button id="cancel-button" class="cancel-button">Cancel</button>
+                </div>
+            </div>
+            <div id="annotation-list" class="annotation-list">
+                <!-- Annotation entries go here -->
+            </div>
+        </div>
+    
+</body>
+</html>

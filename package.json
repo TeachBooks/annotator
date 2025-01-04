@@ -1,0 +1,21 @@
+{
+  "name": "refactored",
+  "version": "1.0.0",
+  "description": "A tool for making annotations on websites with the primary application for use with online interactive textbooks. This extension provides students, readers, and anyone with the ability to use an online textbook in a similar way as a paper book: highlight text and make notes in the margins. Although the initial feature set is simple, future releases will include the ability to use labels and different annotation types to improve your study sessions as well as features to collaborate with others. The extension is developed by the TeachBooks team (teachbooks@tudelft.nl)",
+  "main": "dist/contentScript.bundle.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.config.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@babel/preset-env": "^7.21.4",
+    "babel-loader": "^9.1.2",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.4"
+  }
+}

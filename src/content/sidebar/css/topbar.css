@@ -1,0 +1,53 @@
+/* src/content/sidebar/css/topbar.css */
+
+/* Top Bar Styling */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 10px; /* Adjust padding to accommodate the toggle button */
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    border-radius: 8px 8px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 1122annotation-sidebar0;
+    width: 100%; /* Make sure it spans the full width of the container */
+}
+
+/* Top Bar Logo and Title */
+.top-bar-logo {
+    display: flex;
+    align-items: center;
+    margin-right: 0; /* Remove margin between logo and title */
+}
+
+.top-bar-logo img {
+    height: 24px; /* Set the height to match the other icons */
+    width: auto; /* Maintain aspect ratio */
+}
+
+.top-bar-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-left: 5px; /* Add a tiny space between logo and title for readability */
+    white-space: nowrap;
+}
+
+.top-bar-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.top-bar-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 12px; /* Reduced size to half */
+    color: #333;
+}
+
+.top-bar-button:hover {
+    color: #007bff;
+}

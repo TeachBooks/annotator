@@ -1,0 +1,44 @@
+/* src/content/sidebar/css/container.css */
+
+/* Parent Container for Top Bar and Sidebar */
+.annotation-container {
+    direction: ltr;
+    position: fixed;
+    top: 0;
+    right: 1px;
+    width: 470px; /* Increase width to accommodate the toggle button */
+    height: 100%;
+    z-index: 1100; /* Higher than most elements but lower than necessary components */
+    display: flex;
+    flex-direction: column;
+    background-color: #fff; /* Optional, if you want a uniform background */
+}
+
+/* Sidebar Styling */
+#annotation-sidebar {
+    direction: ltr;
+    position: fixed;
+    top: 54px; /* Adjust to be just below the top bar */
+    right: 0;
+    width: 450px; /* Width matches the container */
+    height: calc(100% - 40px); /* Adjust height to account for the top bar */
+    background-color: #efefef;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    z-index: 1100; /* Increased z-index to ensure it stays on top */
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease; /* Transition for smooth opening/closing */
+}
+
+/* Sidebar hidden (closed) state */
+#annotation-sidebar.closed {
+    transform: translateX(100%); /* Move sidebar off the screen */
+}
+
+/* Adjust other necessary styles */
+#annotation-container {
+    width: 470px; /* Ensure the container width matches the top bar */
+}

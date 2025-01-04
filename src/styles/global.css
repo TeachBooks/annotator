@@ -1,0 +1,153 @@
+/* Global styles for the extension */
+#floating-toolbar {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    display: flex;
+    gap: 8px; /* Reduced gap between buttons */
+    padding: 6px 10px; /* Reduced padding inside the toolbar */
+    z-index: 10000;
+    align-items: center;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+#floating-toolbar.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#floating-toolbar button {
+    background: none;
+    border: none;
+    color: #333;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 4px 8px; /* Reduced padding inside each button */
+    border-radius: 6px;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+#floating-toolbar button:hover {
+    background-color: #f0f0f0;
+}
+
+#floating-toolbar button i {
+    margin-right: 6px; /* Reduced space between icon and text */
+    font-size: 16px;
+}
+
+/* Icons for buttons using FontAwesome */
+#annotate-btn::before {
+    content: "\f10e"; /* FontAwesome icon for quote-left */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+#highlight-btn::before {
+    content: "\f05b"; /* FontAwesome icon for highlighter */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+#remove-highlight-btn::before {
+    content: "\f057"; /* FontAwesome icon for times-circle (close icon) */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    color: #ff4b4b;
+}
+
+#remove-highlight-btn:hover::before {
+    color: #ff0000;
+}
+
+/* Icons for annotation toolbar buttons using FontAwesome */
+
+/* View Annotation Button */
+#view-annotation-btn::before {
+    content: "\f06e"; /* FontAwesome icon for eye */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-right: 6px; /* Consistent spacing with other buttons */
+    font-size: 16px; /* Consistent icon size */
+}
+
+/* Remove Annotation Button */
+#remove-annotation-btn::before {
+    content: "\f1f8"; /* FontAwesome icon for trash */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    color: #ff4b4b; /* Red color to indicate deletion */
+    margin-right: 6px; /* Consistent spacing with other buttons */
+    font-size: 16px; /* Consistent icon size */
+}
+
+/* Hover Effect for Remove Annotation Button */
+#remove-annotation-btn:hover::before {
+    color: #ff0000; /* Darker red on hover */
+}
+
+
+/* Global styles for the extension */
+#annotation-toolbar {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    display: flex;
+    gap: 8px; /* Reduced gap between buttons */
+    padding: 6px 10px; /* Reduced padding inside the toolbar */
+    z-index: 10005;
+    align-items: center;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transform: translateY(-10px);
+}
+
+#annotation-toolbar.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#annotation-toolbar button {
+    background: none;
+    border: none;
+    color: #333;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 4px 8px; /* Reduced padding inside each button */
+    border-radius: 6px;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+#annotation-toolbar button:hover {
+    background-color: #f0f0f0;
+}
+
+#annotation-toolbar button i {
+    margin-right: 6px; /* Reduced space between icon and text */
+    font-size: 16px;
+}
+
+.annotated-text {
+    text-decoration: underline;
+    text-decoration-color: #ff0000; /* Optional: Set underline color */
+    text-decoration-thickness: 2px; /* Optional: Set underline thickness */
+    cursor: pointer; /* Optional: Change cursor to indicate interactivity */
+}
+
+.annotated-annotation {
+    text-decoration: underline;
+    text-decoration-color: red;
+    background-color: transparent !important; /* Ensure no background */
+}
+
+.highlighted-text {
+    mix-blend-mode: multiply;
+    /* background-color will be set inline by the script */
+}

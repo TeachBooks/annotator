@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "TeachBooks Annotator",
+  "version": "1.1.3",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "src/background/background.js"
+  },
+  "action": {
+    "default_icon": "assets/icons/icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "src/lib/jquery-3.6.0.min.js",  
+        "src/lib/annotator-full.min.js",
+        "src/content/contentScript.js"
+      ],
+      "css": [
+        "src/styles/global.css",
+        "src/lib/annotator.min.css"
+      ]
+    }
+  ],
+  "host_permissions": [
+    "file://*/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/content/sidebar/*",
+        "assets/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

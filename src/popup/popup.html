@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Text Highlighter</title>
+  <link rel="stylesheet" href="popup.css">
+  <style>
+    /* Base Styles */
+    body {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      min-width: 200px; /* Reduced width for a more compact popup */
+      background-color: #f0f0f0; /* Light theme background */
+      color: #333; /* Light theme text color */
+      transition: background-color 0.3s, color 0.3s; /* Smooth transition for theme change */
+    }
+
+    /* Dark Theme Styles */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #2c2c2c; /* Dark theme background */
+        color: #f0f0f0; /* Dark theme text color */
+      }
+    }
+
+    #summary {
+      margin-bottom: 15px;
+    }
+
+    /* Base Button Styles */
+    button {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+      color: white; /* Button text color */
+    }
+
+    /* Toggle Extension Button Styles */
+    #toggle-extension {
+      background-color: #dc3545; /* Red color */
+      margin-bottom: 15px; /* Extra space below the toggle button */
+    }
+
+    #toggle-extension.deactivate {
+      background-color: #dc3545; /* Red color remains the same */
+    }
+
+    #toggle-extension:hover {
+      background-color: #c82333; /* Darker red on hover */
+    }
+
+    #toggle-extension.deactivate:hover {
+      background-color: #bd2130; /* Darker red on hover */
+    }
+
+    /* Other Buttons Styles */
+    #open-sidebar,
+    #clear-highlights,
+    #clear-annotations,
+    #export-data,
+    #import-data {
+      background-color: #6c757d; /* Initial gray color for buttons */
+    }
+
+    /* Light Theme Button Hover */
+    button:hover:not(#toggle-extension):not(.deactivate) {
+      background-color: #5a6268; /* Darker gray on hover */
+    }
+
+    /* Dark Theme Button Styles */
+    @media (prefers-color-scheme: dark) {
+      #open-sidebar,
+      #clear-highlights,
+      #clear-annotations,
+      #export-data,
+      #import-data {
+        background-color: #495057; /* Dark gray for buttons in dark mode */
+      }
+
+      /* Dark Theme Button Hover */
+      button:hover:not(#toggle-extension):not(.deactivate) {
+        background-color: #343a40; /* Even darker gray on hover */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Summary Section -->
+  <div id="summary"></div>
+  
+  <!-- Functional Buttons -->
+  <button id="open-sidebar">Open Annotation Sidebar</button>
+  <button id="clear-highlights">Clear All Highlights</button>
+  <button id="clear-annotations">Clear All Annotations</button>
+  <button id="export-data">Export Data</button>
+  <input type="file" id="import-file" style="display:none;" />
+  <button id="import-data">Import Data</button>
+  <!-- Toggle Extension Button -->
+  <button id="toggle-extension">Activate Extension</button>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

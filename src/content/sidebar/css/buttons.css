@@ -1,0 +1,84 @@
+/* src/content/sidebar/css/buttons.css */
+
+/* Sidebar Toggle Button */
+.toggle-sidebar-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    margin-right: 10px; /* Space between the button and the logo */
+}
+
+.toggle-sidebar-button:hover {
+    color: #007bff;
+}
+
+/* Post to Public Button Styling */
+.save-button {
+    background-color: #4A4A4A;
+    color: white;
+    border: 1px solid #4A4A4A;
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 140px;
+}
+
+/* Down arrow for Post to Public Button */
+.save-button::after {
+    content: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOCIgdmlld0JveD0iMCAwIDEyIDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEwLjU4NyAxLjM0M0w2IDQuOTU3IDEuNDEzIDEuMzQzTDAgMi42MTVsNiA0LjQ0NSA2LTQuNDQ1LTEuNDEzLTEuMjczWiIgZmlsbD0iI0ZGRiIvPjwvc3ZnPg==');
+    margin-left: 8px;
+}
+
+/* Hover state for Save Button */
+.save-button:hover {
+    background-color: #5A5A5A;
+}
+
+/* Cancel Button Styling */
+.cancel-button {
+    background-color: #F8F8F8;
+    color: #4A4A4A;
+    border: 1px solid #ddd;
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover state for Cancel Button */
+.cancel-button:hover {
+    background-color: #E0E0E0;
+    border-color: #ccc;
+}
+
+/* Optional styling for icon inside Cancel button */
+.cancel-button::before {
+    content: "✖";
+    font-size: 12px;
+    margin-right: 8px;
+    color: #4A4A4A;
+}
+
+.search-input {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    width: 0;
+    opacity: 0;
+}
+
+.search-input.visible {
+    width: 200px;
+    opacity: 1;
+}

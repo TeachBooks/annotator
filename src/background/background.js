@@ -62,17 +62,62 @@ chrome.action.onClicked.addListener((tab) => {
         console.log("Extension activated via toolbar icon.");
         updatePopup(true); // Set the popup to show when active
 
-        // Send a message to content script to activate features
-        chrome.tabs.sendMessage(tab.id, { action: "activate" }, (response) => {
-          if (chrome.runtime.lastError) {
-            console.error("Error sending activate message:", chrome.runtime.lastError.message);
-          } else {
-            console.log("Activate message response:", response);
-          }
-        });
-
-        // Show toast notification via content script
-        chrome.tabs.sendMessage(tab.id, { action: "showToast", message: "Extension activated." });
+        // Check if we can inject into this tab
+        if (!tab.url.startsWith('chrome://') && !tab.url.startsWith('edge://')) {
+          // Ensure content script is loaded before sending messages
+          chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            function: () => {
+              // This will return true if our content script is loaded
+              return typeof window.__teachbooksAnnotatorLoaded !== 'undefined';
+            }
+          }).then((results) => {
+            const isLoaded = results[0]?.result;
+            
+            if (isLoaded) {
+              // Content script is loaded, send messages
+              chrome.tabs.sendMessage(tab.id, { action: "activate" }, (response) => {
+                if (chrome.runtime.lastError) {
+                  console.error("Error sending activate message:", chrome.runtime.lastError.message);
+                } else {
+                  console.log("Activate message response:", response);
+                  // Only show toast if activate was successful
+                  chrome.tabs.sendMessage(tab.id, { 
+                    action: "showToast", 
+                    message: "Extension activated." 
+                  });
+                }
+              });
+            } else {
+              // Content script needs to be injected
+              chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                files: ['src/content/contentScript.js']
+              }).then(() => {
+                // Wait a brief moment for the script to initialize
+                setTimeout(() => {
+                  chrome.tabs.sendMessage(tab.id, { action: "activate" }, (response) => {
+                    if (chrome.runtime.lastError) {
+                      console.error("Error sending activate message:", chrome.runtime.lastError.message);
+                    } else {
+                      console.log("Activate message response:", response);
+                      chrome.tabs.sendMessage(tab.id, { 
+                        action: "showToast", 
+                        message: "Extension activated." 
+                      });
+                    }
+                  });
+                }, 100);
+              }).catch(err => {
+                console.error("Error injecting content script:", err);
+              });
+            }
+          }).catch(err => {
+            console.error("Error checking content script status:", err);
+          });
+        } else {
+          console.log("Cannot activate extension on this page type");
+        }
       });
     } else {
       // If active, clicking the icon will open the popup as it's set
@@ -84,37 +129,9 @@ chrome.action.onClicked.addListener((tab) => {
 
 // Handle messages from content scripts and popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log("[DEBUG background] Message received:", request);
   if (request.action === "openSidebar") {
     console.log("Received request to open sidebar with text:", request.text);
-
-    // Inject sidebar HTML and CSS into the current page
-    chrome.scripting.executeScript({
-      target: { tabId: sender.tab.id },
-      files: ['src/content/sidebar/js/initializeSidebar.js'] // Ensure this file contains the sidebar creation logic
-    }).then(() => {
-      console.log("Sidebar initialization script injected.");
-    }).catch(err => {
-      console.error("Error injecting sidebar script:", err);
-    });
-
-    chrome.scripting.insertCSS({
-      target: { tabId: sender.tab.id },
-      files: ['src/content/sidebar/css/sidebar.css'] // Ensure the CSS is loaded
-    }).then(() => {
-      console.log("Sidebar CSS injected.");
-    }).catch(err => {
-      console.error("Error injecting sidebar CSS:", err);
-    });
-
-    // Send a message to the content script to open the sidebar
-    chrome.tabs.sendMessage(sender.tab.id, { action: "showSidebar", text: request.text }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error("Error sending showSidebar message:", chrome.runtime.lastError.message);
-      } else {
-        console.log("Show Sidebar response:", response);
-      }
-    });
-
     sendResponse({ status: "Sidebar opening initiated" });
   } else if (request.action === "deactivate") {
     // Handle deactivation from popup
@@ -143,6 +160,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ status: "Error", message: "Unknown action" });
   }
 
-  // Return true to indicate that you want to send a response asynchronously
-  return true;
+  return true; // Indicate async response
 });

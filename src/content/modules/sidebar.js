@@ -2,16 +2,21 @@
 export function initializeSidebar() {
     // Add resize handle to container
     const container = document.querySelector('.annotation-container');
-    const resizeHandle = document.createElement('div');
-    resizeHandle.className = 'resize-handle';
-    container.appendChild(resizeHandle);
+    if (!container) {
+        console.error('Container not found');
+        return;
+    }
+
+    let resizeHandle = container.querySelector('.resize-handle');
+    if (!resizeHandle) {
+        resizeHandle = document.createElement('div');
+        resizeHandle.className = 'resize-handle';
+        container.appendChild(resizeHandle);
+    }
 
     let isResizing = false;
     let startX;
     let startWidth;
-
-    // Initialize resize functionality
-    resizeHandle.addEventListener('mousedown', initResize);
 
     function initResize(e) {
         isResizing = true;
@@ -27,12 +32,15 @@ export function initializeSidebar() {
         
         // Prevent text selection while resizing
         document.body.style.userSelect = 'none';
+        
+        // Prevent default drag behavior
+        e.preventDefault();
     }
 
     function resize(e) {
         if (!isResizing) return;
 
-        // Calculate new width
+        // Calculate new width (subtract from startWidth since handle is on left side)
         const width = startWidth - (e.clientX - startX);
         
         // Apply min/max constraints
@@ -42,9 +50,17 @@ export function initializeSidebar() {
         
         // Update container width
         container.style.width = `${newWidth}px`;
+        
+        // Save width immediately
+        localStorage.setItem('annotationSidebarWidth', `${newWidth}px`);
+        
+        // Prevent text selection
+        e.preventDefault();
     }
 
     function stopResize() {
+        if (!isResizing) return;
+        
         isResizing = false;
         
         // Remove active class
@@ -58,15 +74,11 @@ export function initializeSidebar() {
         document.body.style.userSelect = '';
     }
 
-    // Store sidebar width in localStorage
-    window.addEventListener('beforeunload', () => {
-        const width = container.style.width;
-        if (width) {
-            localStorage.setItem('annotationSidebarWidth', width);
-        }
-    });
+    // Remove any existing event listeners before adding new ones
+    resizeHandle.removeEventListener('mousedown', initResize);
+    resizeHandle.addEventListener('mousedown', initResize);
 
-    // Restore sidebar width from localStorage
+    // Restore saved width if any
     const savedWidth = localStorage.getItem('annotationSidebarWidth');
     if (savedWidth) {
         container.style.width = savedWidth;

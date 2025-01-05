@@ -3,6 +3,7 @@
 import { splitTextIntoLines } from './utils.js';
 import { removeAnnotationHighlight } from './annotation.js';
 import { initialize } from './storage.js';
+import { initializeSidebar } from './sidebar.js';
 
 /**
  * showToast
@@ -98,17 +99,29 @@ export function loadSidebar(callback) {
         editorContainer.style.display = 'none';
       }
 
-      // Add stylesheet
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.type = 'text/css';
-      link.href = chrome.runtime.getURL('src/content/sidebar/css/sidebar.css');
-      document.head.appendChild(link);
+      // Add stylesheets
+      const stylesheets = [
+        'src/content/sidebar/css/sidebar.css',
+        'src/content/sidebar/css/annotations.css',
+        'src/content/sidebar/css/buttons.css',
+        'src/content/sidebar/css/container.css',
+        'src/content/sidebar/css/general.css',
+        'src/content/sidebar/css/navigation.css',
+        'src/content/sidebar/css/notes.css',
+        'src/content/sidebar/css/tags.css',
+        'src/content/sidebar/css/topbar.css'
+      ];
+
+      stylesheets.forEach(stylesheet => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = chrome.runtime.getURL(stylesheet);
+        document.head.appendChild(link);
+      });
 
       // Initialize resize functionality
-      import('./sidebar.js').then(module => {
-        module.initializeSidebar();
-      });
+      initializeSidebar();
 
       // Setup toggle button
       const toggleButton = document.getElementById('toggle-sidebar-button');
@@ -187,6 +200,7 @@ export function displayExistingAnnotations(searchQuery = '') {
     filtered.forEach(annotation => {
       const annotationItem = document.createElement('div');
       annotationItem.className = 'annotation-item';
+      annotationItem.setAttribute('data-annotation-id', annotation.id);
 
       // Create header
       const header = document.createElement('div');

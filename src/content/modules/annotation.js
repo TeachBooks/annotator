@@ -200,20 +200,33 @@ export function viewAnnotation(annotationId) {
             editorContainer.style.display = 'none';
           }
 
-          // Find and animate the clicked annotation
+          // Display annotations and then animate the clicked one
+          displayExistingAnnotations();
+          
+          // Wait for annotations to be rendered
           setTimeout(() => {
-            const annotationItems = document.querySelectorAll('.annotation-item');
-            annotationItems.forEach(item => {
-              const selectedText = item.querySelector('.selected-text')?.innerText;
-              if (selectedText === annotation.text) {
-                item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                item.classList.add('bounce');
-                setTimeout(() => {
+            const annotationItem = document.querySelector(`.annotation-item[data-annotation-id="${annotation.id}"]`);
+            if (annotationItem) {
+              // First scroll to the item
+              annotationItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              
+              // Wait for scroll to complete then add animation
+              setTimeout(() => {
+                // Remove bounce class from any other items
+                document.querySelectorAll('.annotation-item').forEach(item => {
                   item.classList.remove('bounce');
-                }, 1000);
-              }
-            });
-          }, 100);
+                });
+                
+                // Add bounce to this item
+                annotationItem.classList.add('bounce');
+                
+                // Remove bounce class after animation completes
+                setTimeout(() => {
+                  annotationItem.classList.remove('bounce');
+                }, 6000); // Match CSS animation duration of 6s
+              }, 300); // Wait for scroll to complete
+            }
+          }, 100); // Wait for annotations to render
         }
       });
     } else {

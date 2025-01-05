@@ -199,6 +199,21 @@ export function viewAnnotation(annotationId) {
           if (editorContainer) {
             editorContainer.style.display = 'none';
           }
+
+          // Find and animate the clicked annotation
+          setTimeout(() => {
+            const annotationItems = document.querySelectorAll('.annotation-item');
+            annotationItems.forEach(item => {
+              const selectedText = item.querySelector('.selected-text')?.innerText;
+              if (selectedText === annotation.text) {
+                item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                item.classList.add('bounce');
+                setTimeout(() => {
+                  item.classList.remove('bounce');
+                }, 1000);
+              }
+            });
+          }, 100);
         }
       });
     } else {
@@ -221,6 +236,10 @@ export function openAllAnnotationsSidebar() {
       return;
     }
     sidebar.style.display = "block";
+    const editorContainer = document.getElementById('editor-container');
+    if (editorContainer) {
+      editorContainer.style.display = 'none';
+    }
     displayExistingAnnotations();
   });
 }

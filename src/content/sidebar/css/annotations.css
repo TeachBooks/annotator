@@ -1,115 +1,122 @@
 /* src/content/sidebar/css/annotations.css */
 
-/* Annotation List Styling */
-
-#annotation-sidebar .annotation-list {
-    flex-grow: 1;
-    /* overflow-y: auto; Enable vertical scrolling */
-    max-height: calc(100vh - 200px); /* Adjust the 200px value as needed */
-    margin-bottom: 15px;
+/* Annotation Sidebar Styling */
+#annotation-sidebar {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
-
-/* if you want the hall thing to be scrollable  */
-/* #annotation-sidebar #editor-container {
+/* Annotation List Styling */
+#annotation-sidebar .annotation-list {
+    flex-grow: 1;
+    max-height: calc(100vh - 200px);
     margin-bottom: 15px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 10px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-} */
-
+    padding-right: 0px;
+}
 
 /* Editor Container */
 #annotation-sidebar #editor-container {
     position: sticky;
-    top: 0; /* Use 'bottom: 0;' if you want it to stick to the bottom */
-    z-index: 1; /* Ensure it stays above other content */
-    background-color: #fff;
+    top: 0;
+    z-index: 1;
+    background-color: var(--bg-primary);
     margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 10px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
 }
 
-
+/* Editor Toolbar */
 #annotation-sidebar #editor-toolbar {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 6px;
-    margin-bottom: 5px;
-    padding: 5px 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #f9f9f9;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-secondary);
 }
 
 #annotation-sidebar .toolbar-button {
     background-color: transparent;
     border: none;
     cursor: pointer;
-    font-size: 12px;
-    color: #333;
-}
-
-#annotation-sidebar #preview-button {
-    margin-left: auto;
-}
-
-#annotation-sidebar .toolbar-button:last-child {
-    margin-left: auto;
+    font-size: 14px;
+    color: var(--text-secondary);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
 }
 
 #annotation-sidebar .toolbar-button:hover {
-    background-color: #e0e0e0;
-    border-radius: 3px;
+    color: var(--primary-color);
+    background-color: rgba(33, 150, 243, 0.08);
 }
 
 #annotation-sidebar .toolbar-button i {
-    font-size: 10px;
+    font-size: 12px;
     vertical-align: middle;
 }
 
 /* Preview Button Styling */
 #annotation-sidebar #preview-button {
-    font-size: 10px;
-    color: #007bff;
+    font-size: 12px;
+    color: var(--primary-color);
     cursor: pointer;
     text-decoration: none;
-    margin-left: 0;
+    margin-left: auto;
     display: flex;
     align-items: center;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+}
+
+#annotation-sidebar #preview-button:hover {
+    background-color: rgba(33, 150, 243, 0.08);
 }
 
 /* Annotation Editor Styling */
 #annotation-sidebar #annotation-editor {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
     box-sizing: border-box;
     font-size: 14px;
-    color: #333;
-    background-color: #fff;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: var(--transition);
+    line-height: 1.5;
+    min-height: 100px;
+    resize: vertical;
 }
 
-/* Base styling for the text container */
+#annotation-sidebar #annotation-editor:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+/* Annotation Text Styling */
 #annotation-sidebar .annotation-text {
     font-style: italic;
-    color: #555;
+    color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     margin: 15px 0;
-    padding-left: 8px;
+    padding-left: 12px;
     position: relative;
+    line-height: 1.5;
 }
 
-/* Default state with light gray line */
 #annotation-sidebar .annotation-text::before {
     content: '';
     position: absolute;
@@ -117,74 +124,175 @@
     top: 0;
     bottom: 0;
     width: 3px;
-    background-color: #ccc;
-    border-radius: 2px;
+    background-color: var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
 }
 
-/* Hover effect to change line color to light blue */
 #annotation-sidebar .annotation-text:hover::before {
-    background-color: #007bff;
+    background-color: var(--primary-color);
 }
-
-/* --- Updated Styles for Annotations in Sidebar --- */
 
 /* Annotation Item Styling */
 #annotation-sidebar .annotation-item {
-    background-color: white;
-    padding: 15px;
-    margin-bottom: 10px;
+    background-color: var(--bg-primary);
+    padding: 20px;
+    margin-bottom: 16px;
     position: relative;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+#annotation-sidebar .annotation-item:hover {
+    box-shadow: var(--shadow-md);
+    border-color: rgba(74, 74, 74, 0.3);
 }
 
 #annotation-sidebar .annotation-item-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 #annotation-sidebar .selected-text {
-    font-weight: bold;
-    font-size: 14px;
-    color: #333;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+    line-height: 1.4;
+    flex: 1;
+    margin-right: 16px;
 }
 
 #annotation-sidebar .annotation-date {
     font-size: 12px;
-    color: #999;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    padding-top: 2px;
 }
 
 #annotation-sidebar .annotation-text-content {
     font-size: 14px;
-    color: #555;
-    margin-bottom: 10px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    line-height: 1.6;
+    padding: 0 2px;
+}
+
+#annotation-sidebar .annotation-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+#annotation-sidebar .annotation-meta > div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#annotation-sidebar .annotation-meta i {
+    font-size: 14px;
+    opacity: 0.7;
 }
 
 #annotation-sidebar .annotation-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
 }
 
 #annotation-sidebar .annotation-actions button {
     background-color: transparent;
     border: none;
-    color: #007bff;
     cursor: pointer;
-    padding: 5px 10px;
-}
-
-#annotation-sidebar .annotation-actions button:hover {
-    text-decoration: underline;
-}
-
-#annotation-sidebar .delete-annotation {
-    color: red;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 #annotation-sidebar .edit-annotation {
-    color: #007bff;
+    color: #4A4A4A;
 }
 
+#annotation-sidebar .edit-annotation:hover {
+    background-color: rgba(74, 74, 74, 0.08);
+}
+
+#annotation-sidebar .delete-annotation {
+    color: #dc3545;
+}
+
+#annotation-sidebar .delete-annotation:hover {
+    background-color: rgba(220, 53, 69, 0.08);
+}
+
+#annotation-sidebar .annotation-actions i {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.bounce {
+    animation: bounce 1s;
+}
+
+/* Empty State */
+#annotation-sidebar .no-annotations {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Separator between groups of annotations */
+#annotation-sidebar .annotation-group-separator {
+    margin: 24px 0;
+    text-align: center;
+    position: relative;
+}
+
+#annotation-sidebar .annotation-group-separator::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background-color: var(--border-color);
+}
+
+#annotation-sidebar .annotation-group-separator span {
+    background-color: var(--bg-secondary);
+    padding: 0 12px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    position: relative;
+    font-weight: 500;
+}

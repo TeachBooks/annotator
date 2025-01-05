@@ -54,10 +54,12 @@ export function showConfirmationDialog(message, onConfirm) {
  */
 export function loadSidebar(callback) {
   console.log("[DEBUG ui.js] Loading sidebar");
+  let container = document.querySelector('.annotation-container');
   let sidebar = document.getElementById('annotation-sidebar');
-  if (sidebar) {
+  
+  if (container && sidebar) {
     console.log("[DEBUG ui.js] Sidebar already exists.");
-    sidebar.style.display = "block";
+    container.style.display = "flex";
     const editorContainer = document.getElementById('editor-container');
     if (editorContainer) {
       editorContainer.style.display = 'block';
@@ -69,28 +71,63 @@ export function loadSidebar(callback) {
   fetch(chrome.runtime.getURL('src/content/sidebar/sidebar.html'))
     .then(response => response.text())
     .then(data => {
-      document.body.insertAdjacentHTML('beforeend', data);
+      // Create container if it doesn't exist
+      if (!container) {
+        container = document.createElement('div');
+        container.className = 'annotation-container';
+        document.body.appendChild(container);
+      }
+
+      // Add resize handle
+      const resizeHandle = document.createElement('div');
+      resizeHandle.className = 'resize-handle';
+      container.appendChild(resizeHandle);
+
+      // Insert sidebar HTML into container
+      container.insertAdjacentHTML('beforeend', data);
       sidebar = document.getElementById('annotation-sidebar');
+      
       if (!sidebar) {
         console.error("[ERROR ui.js] Sidebar element not found after insertion.");
         return;
       }
+
+      // Hide editor container by default
+      const editorContainer = document.getElementById('editor-container');
+      if (editorContainer) {
+        editorContainer.style.display = 'none';
+      }
+
+      // Add stylesheet
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.type = 'text/css';
       link.href = chrome.runtime.getURL('src/content/sidebar/css/sidebar.css');
       document.head.appendChild(link);
 
+      // Initialize resize functionality
+      import('./sidebar.js').then(module => {
+        module.initializeSidebar();
+      });
+
+      // Setup toggle button
       const toggleButton = document.getElementById('toggle-sidebar-button');
       if (toggleButton) {
         toggleButton.addEventListener('click', function() {
-          sidebar.style.display = "none";
+          container.style.display = "none";
           const editorContainer = document.getElementById('editor-container');
           if (editorContainer) {
             editorContainer.style.display = 'none';
           }
         });
       }
+
+      // Restore saved width if any
+      const savedWidth = localStorage.getItem('annotationSidebarWidth');
+      if (savedWidth) {
+        container.style.width = savedWidth;
+      }
+
       callback();
     })
     .catch(err => console.error("[ERROR ui.js] Error loading sidebar:", err));

@@ -1,13 +1,76 @@
 /* src/content/sidebar/css/tags.css */
 
+/* Tag Container */
+.tag-container {
+    margin: 10px 0;
+}
+
 /* Tag Input */
 #tag-input {
-    padding: 8px;
+    padding: 10px 12px;
     font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    margin-bottom: 15px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    margin: 10px 0 15px;
     width: 100%;
     box-sizing: border-box;
-    margin-top: 10px;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    transition: var(--transition);
+    line-height: 1.5;
+}
+
+#tag-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+#tag-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+/* Tag List */
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* Individual Tag */
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    background-color: rgba(33, 150, 243, 0.08);
+    color: var(--primary-color);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    transition: var(--transition);
+}
+
+.tag:hover {
+    background-color: rgba(33, 150, 243, 0.12);
+}
+
+/* Tag Remove Button */
+.tag-remove {
+    margin-left: 6px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: var(--transition);
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.tag-remove:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.05);
 }

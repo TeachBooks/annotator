@@ -22,42 +22,38 @@
     
 </head>
 <body>
-    <div id="annotation-container" class="annotation-container">
-        <div id="top-bar" class="top-bar">
-            <button id="toggle-sidebar-button" class="toggle-sidebar-button">
-                <i class="fas fa-chevron-left"></i> <!-- Icon for toggling sidebar -->
+    <!-- The container will be created by JavaScript -->
+    <div id="top-bar" class="top-bar">
+        <button id="toggle-sidebar-button" class="toggle-sidebar-button">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div id="annotator-logo" class="top-bar-logo">
+            <!-- The img tag will be added via JavaScript -->
+        </div>
+        <div id="annotator-title" class="top-bar-title">
+            Local Annotator
+        </div>
+        <div id="top-bar-icons" class="top-bar-icons">
+            <button id="search-button" class="top-bar-button">
+                <i class="fas fa-search"></i>
             </button>
-            <div id="annotator-logo" class="top-bar-logo">
-                <!-- The img tag will be added via JavaScript -->
-            </div>
-            <div id="annotator-title" class="top-bar-title">
-                Local Annotator
-            </div>
-            <!-- <button onclick="exportHighlights()">Export Highlights</button>
-            <input type="file" id="import-file" onchange="importHighlights(event)"> -->
-            <div id="top-bar-icons" class="top-bar-icons">
-                <button id="search-button" class="top-bar-button">
-                    <i  class="fas fa-search"></i> <!-- Search Icon -->
-                </button>
-                <button class="top-bar-button">
-                    <i class="fas fa-sort"></i> <!-- Sort by Icon -->
-                </button>
-                <button class="top-bar-button">
-                    <i class="fas fa-share-alt"></i> <!-- Share Icon -->
-                </button>
-                <button class="top-bar-button">
-                    <i class="fas fa-question-circle"></i> <!-- Help Icon -->
-                </button>
-                <button class="top-bar-button">
-                    <i class="fas fa-user"></i> <!-- User Icon -->
-                </button>
-                <input type="text" id="search-input" class="search-input" placeholder="Search Annotations..." >
-
-            </div>
+            <button class="top-bar-button">
+                <i class="fas fa-sort"></i>
+            </button>
+            <button class="top-bar-button">
+                <i class="fas fa-share-alt"></i>
+            </button>
+            <button class="top-bar-button">
+                <i class="fas fa-question-circle"></i>
+            </button>
+            <button class="top-bar-button">
+                <i class="fas fa-user"></i>
+            </button>
+            <input type="text" id="search-input" class="search-input" placeholder="Search Annotations...">
         </div>
     </div>
-    
-        <div id="annotation-sidebar" class="sidebar">
+
+    <div id="annotation-sidebar" class="sidebar">
             <div class="annotation-header">
                 <div class="sidebar-nav">
                     <span id="annotations-tab" class="active-tab">Annotations</span>

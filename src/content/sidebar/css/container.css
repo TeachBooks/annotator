@@ -5,40 +5,90 @@
     direction: ltr;
     position: fixed;
     top: 0;
-    right: 1px;
-    width: 470px; /* Increase width to accommodate the toggle button */
+    right: 0;
+    width: 400px; /* Default width */
+    min-width: 300px; /* Minimum width */
+    max-width: 800px; /* Maximum width */
     height: 100%;
-    z-index: 1100; /* Higher than most elements but lower than necessary components */
+    z-index: 1100;
     display: flex;
     flex-direction: column;
-    background-color: #fff; /* Optional, if you want a uniform background */
+    background-color: var(--bg-primary);
+    box-shadow: var(--shadow-md);
+    overflow: hidden; /* Required for resize to work */
+}
+
+/* Resize Handle */
+.resize-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    cursor: ew-resize;
+    background-color: transparent;
+    transition: background-color 0.2s;
+    z-index: 1121;
+}
+
+.resize-handle:hover,
+.resize-handle.active {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Add a larger hit area for easier grabbing */
+.resize-handle::after {
+    content: "";
+    position: absolute;
+    left: -4px;
+    right: -4px;
+    top: 0;
+    bottom: 0;
+    z-index: 1121;
 }
 
 /* Sidebar Styling */
 #annotation-sidebar {
     direction: ltr;
-    position: fixed;
-    top: 54px; /* Adjust to be just below the top bar */
-    right: 0;
-    width: 450px; /* Width matches the container */
-    height: calc(100% - 40px); /* Adjust height to account for the top bar */
-    background-color: #efefef;
-    color: #333;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    position: relative; /* Changed from fixed to relative */
+    flex: 1; /* Take remaining space */
+    width: 100%; /* Full width of container */
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
     padding: 15px;
-    z-index: 1100; /* Increased z-index to ensure it stays on top */
-    font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease; /* Transition for smooth opening/closing */
+    border-left: 1px solid var(--border-color);
+    overflow-y: auto; /* Enable scrolling */
 }
 
 /* Sidebar hidden (closed) state */
-#annotation-sidebar.closed {
-    transform: translateX(100%); /* Move sidebar off the screen */
+.annotation-container.closed {
+    transform: translateX(100%);
 }
 
-/* Adjust other necessary styles */
-#annotation-container {
-    width: 470px; /* Ensure the container width matches the top bar */
+/* Top Bar Container */
+.top-bar-container {
+    width: 100%;
+    background-color: var(--bg-primary);
+}
+
+/* Scrollbar Styling */
+#annotation-sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+#annotation-sidebar::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+#annotation-sidebar::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+    border: 2px solid var(--bg-secondary);
+}
+
+#annotation-sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-secondary);
 }

@@ -13,6 +13,7 @@ import {
   displayAnnotationText,
   displayExistingAnnotations
 } from './ui.js';
+import { initialize } from './storage.js';
 
 /**
  * ---------------------------------------------------------------------------
@@ -78,22 +79,11 @@ export function applyAnnotationHighlight(range, annotationId = null) {
   }
 
   console.log(`[DEBUG applyAnnotationHighlight] Underlining text: "${range.toString()}" annotation ID: ${annotationId}`);
-  const span = document.createElement("span");
-  span.className = "annotated-annotation";
-  if (annotationId) {
-    span.setAttribute('data-annotation-id', annotationId);
-  }
-  span.style.textDecoration = 'underline';
-  span.style.textDecorationColor = 'red';
-
-  try {
-    const extracted = range.extractContents();
-    span.appendChild(extracted);
-    range.insertNode(span);
-    console.log("[DEBUG applyAnnotationHighlight] Completed annotation underline insertion.");
-  } catch (err) {
-    console.error("Error applying annotation highlight (overlapping check):", err);
-  }
+  // Instead of manipulating DOM directly, just return the range info
+  return {
+    range: range,
+    id: annotationId
+  };
 }
 
 /**
@@ -103,15 +93,8 @@ export function applyAnnotationHighlight(range, annotationId = null) {
  */
 export function removeAnnotationHighlight(annotationId) {
   console.log(`[DEBUG removeAnnotationHighlight] Removing annotation highlight ID: ${annotationId}`);
-  const annotatedElements = document.querySelectorAll(`[data-annotation-id="${annotationId}"]`);
-  annotatedElements.forEach(element => {
-    const parent = element.parentNode;
-    while (element.firstChild) {
-      parent.insertBefore(element.firstChild, element);
-    }
-    parent.removeChild(element);
-  });
-  console.log(`[DEBUG removeAnnotationHighlight] Done removing annotation highlight ID: ${annotationId}`);
+  // No need for DOM manipulation, just return the ID to be removed
+  return annotationId;
 }
 
 /**
@@ -121,14 +104,6 @@ export function removeAnnotationHighlight(annotationId) {
  */
 export function removeAnnotationById(annotationId, annotatedElement) {
   console.log(`[DEBUG removeAnnotationById] annotationId: ${annotationId}`);
-  if (annotatedElement && annotatedElement.parentNode) {
-    while (annotatedElement.firstChild) {
-      annotatedElement.parentNode.insertBefore(annotatedElement.firstChild, annotatedElement);
-    }
-    annotatedElement.parentNode.removeChild(annotatedElement);
-    console.log("[DEBUG removeAnnotationById] Annotated element removed from DOM.");
-  }
-
   chrome.storage.local.get({ annotations: [] }, function(result) {
     let annotations = result.annotations;
     const index = annotations.findIndex(ann => ann.id === Number(annotationId));
@@ -136,6 +111,7 @@ export function removeAnnotationById(annotationId, annotatedElement) {
       const removed = annotations.splice(index, 1)[0];
       chrome.storage.local.set({ annotations: annotations }, function() {
         console.log("[DEBUG removeAnnotationById] Annotation removed from storage:", removed);
+        initialize(); // Rebuild from storage after removal
         showToast("Annotation removed successfully!");
       });
     } else {
@@ -176,20 +152,6 @@ export function openAnnotationSidebar(selectedText, range) {
   };
 
   console.log("[DEBUG annotation.js] Annotation data prepared:", JSON.stringify(annotationData, null, 2));
-
-  // Immediately underline so user sees it
-  subRanges.forEach(r => {
-    try {
-      const newRange = document.createRange();
-      newRange.setStart(r.startContainer, r.startOffset);
-      newRange.setEnd(r.endContainer, r.endOffset);
-      if (!newRange.collapsed) {
-        applyAnnotationHighlight(newRange, annotationData.id);
-      }
-    } catch (e) {
-      console.error("Error applying annotation highlight immediately:", e);
-    }
-  });
 
   loadSidebar(() => {
     const sidebar = document.getElementById("annotation-sidebar");

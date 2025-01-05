@@ -2,6 +2,7 @@
 
 import { splitTextIntoLines } from './utils.js';
 import { removeAnnotationHighlight } from './annotation.js';
+import { initialize } from './storage.js';
 
 /**
  * showToast
@@ -268,21 +269,7 @@ document.addEventListener("click", function(event) {
           document.getElementById("annotation-editor").innerText = '';
           document.getElementById('editor-container').style.display = 'none';
           displayExistingAnnotations();
-
-          // Re-apply underline so any updated text is annotated
-          annotationData.subRanges.forEach(sub => {
-            const range = document.createRange();
-            const startNode = findTextNode(sub.startXPath);
-            const endNode = findTextNode(sub.endXPath);
-            if (startNode && endNode) {
-              range.setStart(startNode, sub.startOffset);
-              range.setEnd(endNode, sub.endOffset);
-              if (!range.collapsed) {
-                console.log("[DEBUG ui.js] Re-applying annotation after save:", annotationData.id);
-                applyAnnotationHighlight(range, annotationData.id);
-              }
-            }
-          });
+          initialize(); // Rebuild from storage after saving
         });
       });
     } else {

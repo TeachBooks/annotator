@@ -10,6 +10,7 @@ import { showFloatingToolbar, showAnnotationToolbar } from './modules/toolbar.js
 import { openAllAnnotationsSidebar, removeAnnotationById } from './modules/annotation.js';
 import { showToast } from './modules/ui.js';
 import { initialize } from './modules/storage.js';
+import './modules/ui/tooltip.js';
 
 // **1. Add Activation State Variable**
 let isActive = false; // Extension is inactive by default

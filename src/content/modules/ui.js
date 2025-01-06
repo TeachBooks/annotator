@@ -141,10 +141,16 @@ export function loadSidebar(callback) {
         container.style.width = savedWidth;
       }
 
+      // Initialize search functionality
+      initializeSearch();
+      
       callback();
     })
     .catch(err => console.error("[ERROR ui.js] Error loading sidebar:", err));
 }
+
+// Export initializeSearch so it can be called from other modules if needed
+export { initializeSearch };
 
 /**
  * displayAnnotationText
@@ -176,28 +182,41 @@ export function displayAnnotationText(fullText, element) {
  * displayExistingAnnotations
  */
 export function displayExistingAnnotations(searchQuery = '') {
+  console.log("[DEBUG ui.js] displayExistingAnnotations called with query:", searchQuery);
   chrome.storage.local.get({ annotations: [] }, function(result) {
     const annotations = result.annotations.filter(a => a.url === window.location.href);
     const annotationList = document.getElementById('annotation-list');
-    if (!annotationList) return;
+    if (!annotationList) {
+      console.error("[DEBUG ui.js] Annotation list element not found.");
+      return;
+    }
 
     annotationList.innerHTML = '';
 
     const filtered = annotations.filter(a => {
+      if (!searchQuery) return true;
       const textMatch = a.text.toLowerCase().includes(searchQuery);
       const annoMatch = (a.annotationText || '').toLowerCase().includes(searchQuery);
       return textMatch || annoMatch;
     });
 
+    console.log("[DEBUG ui.js] Filtered annotations count:", filtered.length);
+
     if (filtered.length === 0) {
       const noResults = document.createElement('div');
       noResults.className = 'no-results';
-      noResults.innerText = 'No annotations found.';
+      noResults.innerText = searchQuery ? 'No matching annotations found.' : 'No annotations found.';
       annotationList.appendChild(noResults);
       return;
     }
 
     filtered.forEach(annotation => {
+      // Highlight matching text if there's a search query
+      const highlightText = (text) => {
+        if (!searchQuery) return text;
+        const regex = new RegExp(`(${searchQuery})`, 'gi');
+        return text.replace(regex, '<span class="search-match">$1</span>');
+      };
       const annotationItem = document.createElement('div');
       annotationItem.className = 'annotation-item';
       annotationItem.setAttribute('data-annotation-id', annotation.id);
@@ -208,7 +227,7 @@ export function displayExistingAnnotations(searchQuery = '') {
 
       const selectedTextElement = document.createElement('div');
       selectedTextElement.className = 'selected-text';
-      selectedTextElement.innerText = annotation.text;
+      selectedTextElement.innerHTML = highlightText(annotation.text);
 
       const dateElement = document.createElement('div');
       dateElement.className = 'annotation-date';
@@ -220,7 +239,30 @@ export function displayExistingAnnotations(searchQuery = '') {
 
       const annotationTextElement = document.createElement('div');
       annotationTextElement.className = 'annotation-text-content';
-      displayAnnotationText(annotation.annotationText || '', annotationTextElement);
+      
+      // For annotation text, we need to handle the "More" link differently
+      if (annotation.annotationText) {
+        const lines = splitTextIntoLines(annotation.annotationText, 50);
+        const maxLines = 2;
+        let displayText = lines.slice(0, maxLines).join('<br>');
+        
+        if (lines.length > maxLines) {
+          displayText = displayText.replace(/<br>$/, '') + '...<a href="#" class="more-link">More</a>';
+        }
+        
+        // Apply search highlighting
+        displayText = highlightText(displayText);
+        annotationTextElement.innerHTML = `<p>${displayText}</p>`;
+        
+        // Re-attach more link handler if present
+        const moreLink = annotationTextElement.querySelector('.more-link');
+        if (moreLink) {
+          moreLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            annotationTextElement.innerHTML = `<p>${highlightText(lines.join('<br>'))}</p>`;
+          });
+        }
+      }
 
       const actions = document.createElement('div');
       actions.className = 'annotation-actions';
@@ -333,29 +375,215 @@ document.addEventListener("click", function(event) {
 });
 
 /**
- * Example search input logic
+ * Search functionality
  */
-document.addEventListener("DOMContentLoaded", function() {
+let searchInitialized = false;
+
+function initializeSearch() {
+  if (searchInitialized) {
+    console.log("[DEBUG ui.js] Search already initialized, skipping");
+    return;
+  }
+
+  console.log("[DEBUG ui.js] Initializing search functionality");
+  const topBar = document.getElementById('top-bar');
   const searchButton = document.getElementById('search-button');
   const searchInput = document.getElementById('search-input');
+  const backButton = document.getElementById('back-button');
 
-  if (searchButton && searchInput) {
-    searchButton.addEventListener('click', function(event) {
-      console.log("[DEBUG ui.js] Search button toggled.");
+  if (!topBar || !searchButton || !searchInput || !backButton) {
+    console.error("[ERROR ui.js] Search elements not found:", {
+      topBar: !!topBar,
+      searchButton: !!searchButton,
+      searchInput: !!searchInput,
+      backButton: !!backButton
+    });
+    return;
+  }
+
+  // Handle search activation
+  const activateSearch = function(event) {
+    if (event) {
       event.stopPropagation();
-      searchInput.classList.toggle('visible');
-      if (searchInput.classList.contains('visible')) {
-        searchInput.focus();
-      } else {
-        searchInput.value = '';
-        displayExistingAnnotations();
+      event.preventDefault();
+    }
+    console.log("[DEBUG ui.js] Search activated");
+    
+    // Always ensure search mode is active
+    topBar.classList.add('search-mode');
+    
+    // Force a reflow to ensure the transition works
+    void topBar.offsetWidth;
+    
+    // Focus the input after the transition
+    setTimeout(() => {
+      searchInput.focus();
+      // Ensure the input is visible and interactive
+      searchInput.style.opacity = '1';
+      searchInput.style.visibility = 'visible';
+      searchInput.style.pointerEvents = 'auto';
+      searchInput.style.width = '100%';
+      searchInput.style.maxWidth = '100%';
+    }, 100);
+  };
+
+  // Add click event listener to the search button
+  searchButton.addEventListener('click', activateSearch);
+  
+  // Ensure the search icon click also triggers search
+  const searchIcon = searchButton.querySelector('i.fa-search');
+  if (searchIcon) {
+    searchIcon.addEventListener('click', function(event) {
+      event.stopPropagation();
+      activateSearch(event);
+    });
+  }
+
+  // Back button click handler
+  backButton.addEventListener('click', function() {
+    console.log("[DEBUG ui.js] Back button clicked.");
+    topBar.classList.remove('search-mode');
+    searchInput.value = '';
+    searchInput.style.width = '0';
+    searchInput.style.maxWidth = '0';
+    displayExistingAnnotations();
+  });
+
+  // Define search handler
+  function handleSearch(event) {
+    console.log("[DEBUG ui.js] Search input event triggered:", event.type);
+    const query = event.target.value.trim().toLowerCase();
+    console.log("[DEBUG ui.js] Search input changed. Query:", query);
+    
+    // Log the current state
+    console.log("[DEBUG ui.js] Search input element:", {
+      value: searchInput.value,
+      visibility: searchInput.style.visibility,
+      opacity: searchInput.style.opacity,
+      width: searchInput.style.width,
+      display: searchInput.style.display
+    });
+    
+    // Force immediate update
+    displayExistingAnnotations(query);
+  }
+
+  // Create a debounced version of the search handler
+  let searchTimeout;
+  function debouncedSearch(event) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => handleSearch(event), 100);
+  }
+
+  // Add event listeners
+  searchInput.addEventListener('input', debouncedSearch);
+  searchInput.addEventListener('keyup', debouncedSearch);
+  searchInput.addEventListener('change', debouncedSearch);
+
+  // Also add direct property handlers
+  searchInput.oninput = debouncedSearch;
+  searchInput.onkeyup = debouncedSearch;
+  searchInput.onchange = debouncedSearch;
+
+  // Add focus handler to ensure input is ready
+  searchInput.addEventListener('focus', function() {
+    console.log("[DEBUG ui.js] Search input focused");
+    if (!topBar.classList.contains('search-mode')) {
+      activateSearch();
+    }
+  });
+
+  // Handle escape key and other keyboard events
+  searchInput.addEventListener('keydown', function(event) {
+    console.log("[DEBUG ui.js] Search input keydown:", event.key);
+    if (event.key === 'Escape') {
+      backButton.click();
+    } else if (event.key === 'Enter') {
+      handleSearch(event);
+    }
+  });
+
+  // Ensure search mode is properly activated
+  const searchContainer = document.querySelector('.search-container');
+  if (searchContainer) {
+    searchContainer.addEventListener('click', function(event) {
+      console.log("[DEBUG ui.js] Search container clicked");
+      if (!topBar.classList.contains('search-mode')) {
+        activateSearch();
+      }
+      searchInput.focus();
+    });
+  }
+
+  // Mark as initialized
+  searchInitialized = true;
+  console.log("[DEBUG ui.js] Search initialization complete");
+}
+
+// Initialize search when sidebar is loaded
+function setupSearch() {
+  console.log("[DEBUG ui.js] Setting up search functionality");
+
+  function tryInitialize() {
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+      console.log("[DEBUG ui.js] Search input found, initializing");
+      
+      // Force the input to be interactive
+      searchInput.style.pointerEvents = 'auto';
+      searchInput.style.visibility = 'visible';
+      searchInput.style.opacity = '1';
+      
+      // Initialize search functionality
+      initializeSearch();
+      
+      // Add direct event listener for input
+      searchInput.addEventListener('input', function(event) {
+        const query = event.target.value.trim().toLowerCase();
+        console.log("[DEBUG ui.js] Direct input event. Query:", query);
+        displayExistingAnnotations(query);
+      });
+      
+      return true;
+    }
+    return false;
+  }
+
+  // Try to initialize immediately
+  if (!tryInitialize()) {
+    console.log("[DEBUG ui.js] Search input not found, setting up observer");
+    
+    // Set up observer to wait for the search input
+    const observer = new MutationObserver(function(mutations) {
+      if (tryInitialize()) {
+        console.log("[DEBUG ui.js] Search initialized via observer");
+        observer.disconnect();
       }
     });
 
-    searchInput.addEventListener('input', function(event) {
-      const query = event.target.value.trim().toLowerCase();
-      displayExistingAnnotations(query);
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
     });
+  }
+}
+
+// Set up search when the module loads
+setupSearch();
+
+// Also set up search when the DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupSearch);
+} else {
+  setupSearch();
+}
+
+// Add a global handler for search input
+document.addEventListener('input', function(event) {
+  if (event.target && event.target.id === 'search-input') {
+    const query = event.target.value.trim().toLowerCase();
+    console.log("[DEBUG ui.js] Global input event. Query:", query);
+    displayExistingAnnotations(query);
   }
 });
 

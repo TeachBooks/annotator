@@ -1,4 +1,6 @@
 // Sidebar functionality
+import { initializeSearch } from './ui.js';
+
 export function initializeSidebar() {
     // Add resize handle to container
     const container = document.querySelector('.annotation-container');
@@ -83,4 +85,7 @@ export function initializeSidebar() {
     if (savedWidth) {
         container.style.width = savedWidth;
     }
+
+    // Initialize search functionality
+    initializeSearch();
 }

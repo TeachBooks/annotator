@@ -12,13 +12,10 @@
         /* Your CSS will go here */
     </style>
     <script src="src/lib/jquery-3.6.0.min.js"></script>
-    <script type="module" src="src/content/sidebar/js/annotations.js"></script>
-    <script type="module" src="src/content/sidebar/js/highlighting.js"></script>
-    <script type="module" src="src/content/sidebar/js/sidebar.js"></script>
-    <script type="module" src="src/content/sidebar/js/annotationSidebar.js"></script>
-    <script type="module" src="src/content/sidebar/js/notes.js"></script>
-    <script type="module" src="src/content/sidebar/js/storageManager.js"></script>
-    <script type="module" src="src/storage/storageManager.js"></script>
+    <script type="module" src="src/content/modules/annotation.js"></script>
+    <script type="module" src="src/content/modules/highlight.js"></script>
+    <script type="module" src="src/content/modules/sidebar.js"></script>
+    <script type="module" src="src/content/modules/storage.js"></script>
     
 </head>
 <body>
@@ -34,22 +31,29 @@
             Local Annotator
         </div>
         <div id="top-bar-icons" class="top-bar-icons">
-            <button id="search-button" class="top-bar-button">
-                <i class="fas fa-search"></i>
+            <button id="back-button" class="top-bar-button">
+                <i class="fas fa-arrow-left"></i>
             </button>
-            <button class="top-bar-button">
-                <i class="fas fa-sort"></i>
-            </button>
-            <button class="top-bar-button">
-                <i class="fas fa-share-alt"></i>
-            </button>
-            <button class="top-bar-button">
-                <i class="fas fa-question-circle"></i>
-            </button>
-            <button class="top-bar-button">
-                <i class="fas fa-user"></i>
-            </button>
-            <input type="text" id="search-input" class="search-input" placeholder="Search Annotations...">
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Search annotations..." autocomplete="off" spellcheck="false">
+                <button id="search-button" class="top-bar-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div class="other-buttons">
+                <button class="top-bar-button">
+                    <i class="fas fa-sort"></i>
+                </button>
+                <button class="top-bar-button">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+                <button class="top-bar-button">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+                <button class="top-bar-button">
+                    <i class="fas fa-user"></i>
+                </button>
+            </div>
         </div>
     </div>
 

@@ -76,6 +76,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+}
+
+.top-bar-button i,
+.top-bar-button svg,
+.top-bar-button path {
+    pointer-events: none;
 }
 
 .top-bar-button:hover {
@@ -85,4 +92,163 @@
 
 .top-bar-button:active {
     transform: scale(0.95);
+}
+
+/* Search Container and Input Styles */
+.search-container {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    margin: 0 8px;
+    transition: all 0.3s ease-in-out;
+}
+
+.search-input {
+    width: 0;
+    max-width: 0;
+    padding: 6px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: all 0.3s ease-in-out;
+    outline: none;
+    overflow: hidden;
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    z-index: 1200;
+}
+
+.top-bar.search-mode .search-container {
+    flex: 1;
+}
+
+.top-bar.search-mode .search-input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100px;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+.search-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.top-bar.search-mode .search-input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100px;
+    padding: 6px 12px;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    margin: 0 8px;
+    flex: 1;
+}
+
+/* Search Mode and Back Button */
+.top-bar {
+    transition: padding 0.2s ease-in-out;
+}
+
+.top-bar.search-mode {
+    padding: 8px;
+}
+
+.top-bar-logo,
+.top-bar-title,
+.top-bar-icons .top-bar-button:not(#search-button):not(#back-button) {
+    transition: opacity 0.2s ease-in-out, visibility 0s linear 0.2s;
+}
+
+.top-bar.search-mode .top-bar-logo,
+.top-bar.search-mode .top-bar-title,
+.top-bar.search-mode .top-bar-icons .top-bar-button:not(#search-button):not(#back-button) {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    pointer-events: none;
+}
+
+.top-bar.search-mode .search-input {
+    width: 100%;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    margin: 0 8px;
+}
+
+.top-bar-icons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1100;
+    flex: 1;
+}
+
+.other-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.top-bar.search-mode .other-buttons {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    pointer-events: none;
+}
+
+.top-bar.search-mode {
+    padding: 8px;
+    position: relative;
+    z-index: 1000;
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+.search-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.top-bar.search-mode #search-button {
+    order: 1;
+}
+
+/* Back Button */
+#back-button {
+    display: flex;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out, visibility 0s linear 0.2s;
+}
+
+.top-bar.search-mode #back-button {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.2s ease-in-out, visibility 0s linear;
 }

@@ -4,10 +4,13 @@ const path = require('path');
 
 module.exports = {
     mode: 'production',
-    entry: './src/content/contentScript.js',
+    entry: {
+        contentScript: './src/content/contentScript.js',
+        background: './src/background/background.js',
+    },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'contentScript.bundle.js',
+        filename: '[name].bundle.js',
     },
     module: {
         rules: [

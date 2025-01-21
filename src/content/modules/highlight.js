@@ -1,6 +1,6 @@
 // src/content/modules/highlight.js
 
-import { rangesIntersect, splitRangeByBlockElements, intersectRanges } from './utils.js';
+import { rangesIntersect, splitRangeByBlockElements, intersectRanges, hasOverlappingAnnotation, hasOverlappingHighlight } from './utils.js';
 
 /**
  * ---------------------------------------------------------------------------

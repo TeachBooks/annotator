@@ -5,31 +5,118 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Text Highlighter</title>
   <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
     /* Base Styles */
     body {
       font-family: Arial, sans-serif;
       padding: 10px;
-      min-width: 200px; /* Reduced width for a more compact popup */
-      background-color: #f0f0f0; /* Light theme background */
-      color: #333; /* Light theme text color */
-      transition: background-color 0.3s, color 0.3s; /* Smooth transition for theme change */
+      min-width: 300px;
+      background-color: #f0f0f0;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     /* Dark Theme Styles */
     @media (prefers-color-scheme: dark) {
       body {
-        background-color: #2c2c2c; /* Dark theme background */
-        color: #f0f0f0; /* Dark theme text color */
+        background-color: #2c2c2c;
+        color: #f0f0f0;
       }
     }
 
-    #summary {
+    /* Menu Buttons */
+    .menu-buttons {
+      display: flex;
+      gap: 10px;
       margin-bottom: 15px;
     }
 
+    .menu-button {
+      flex: 1;
+      padding: 8px;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.2s;
+    }
+
+    .menu-button:hover {
+      background-color: #357abd;
+    }
+
+    .menu-button i {
+      font-size: 16px;
+    }
+
+    /* Panel Styles */
+    .panel {
+      display: none;
+      background: rgba(0, 0, 0, 0.05);
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Filter Section Styles */
+    .filter-group {
+      margin-bottom: 10px;
+    }
+
+    .filter-group h4 {
+      margin: 5px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #666;
+    }
+
+    .filter-group label {
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .filter-group label:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .color-box {
+      width: 16px;
+      height: 16px;
+      margin: 0 8px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 2px;
+    }
+
     /* Base Button Styles */
-    button {
+    .action-button {
       display: block;
       width: 100%;
       padding: 8px 12px;
@@ -39,70 +126,146 @@
       border: none;
       border-radius: 4px;
       transition: background-color 0.3s;
-      color: white; /* Button text color */
+      color: white;
+      background-color: #6c757d;
+    }
+
+    .action-button:hover {
+      background-color: #5a6268;
     }
 
     /* Toggle Extension Button Styles */
     #toggle-extension {
-      background-color: #dc3545; /* Red color */
-      margin-bottom: 15px; /* Extra space below the toggle button */
+      background-color: #dc3545;
+      margin-top: 15px;
     }
 
     #toggle-extension.deactivate {
-      background-color: #dc3545; /* Red color remains the same */
+      background-color: #dc3545;
     }
 
     #toggle-extension:hover {
-      background-color: #c82333; /* Darker red on hover */
+      background-color: #c82333;
     }
 
-    #toggle-extension.deactivate:hover {
-      background-color: #bd2130; /* Darker red on hover */
-    }
-
-    /* Other Buttons Styles */
-    #open-sidebar,
-    #clear-highlights,
-    #clear-annotations,
-    #export-data,
-    #import-data {
-      background-color: #6c757d; /* Initial gray color for buttons */
-    }
-
-    /* Light Theme Button Hover */
-    button:hover:not(#toggle-extension):not(.deactivate) {
-      background-color: #5a6268; /* Darker gray on hover */
-    }
-
-    /* Dark Theme Button Styles */
+    /* Dark Theme Styles */
     @media (prefers-color-scheme: dark) {
-      #open-sidebar,
-      #clear-highlights,
-      #clear-annotations,
-      #export-data,
-      #import-data {
-        background-color: #495057; /* Dark gray for buttons in dark mode */
+      .panel {
+        background: rgba(255, 255, 255, 0.05);
       }
 
-      /* Dark Theme Button Hover */
-      button:hover:not(#toggle-extension):not(.deactivate) {
-        background-color: #343a40; /* Even darker gray on hover */
+      .filter-group h4 {
+        color: #aaa;
+      }
+
+      .filter-group label:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .action-button {
+        background-color: #495057;
+      }
+
+      .action-button:hover {
+        background-color: #343a40;
       }
     }
   </style>
 </head>
 <body>
+  <!-- Menu Buttons -->
+  <div class="menu-buttons">
+    <button id="show-stats" class="menu-button">
+      <i class="fas fa-chart-bar"></i>
+      Statistics
+    </button>
+    <button id="show-filters" class="menu-button">
+      <i class="fas fa-filter"></i>
+      Filters
+    </button>
+  </div>
 
-  <!-- Summary Section -->
-  <div id="summary"></div>
+  <!-- Summary Section (Stats) -->
+  <div id="summary" class="panel"></div>
+
+  <!-- Filter Section -->
+  <div class="filter-section panel">
+    <div class="filter-group">
+      <label>
+        <input type="checkbox" id="show-annotations" checked>
+        Show Annotations
+      </label>
+    </div>
+    
+    <div class="filter-group">
+      <h4>Highlight Colors</h4>
+      <label>
+        <input type="checkbox" id="show-yellow" checked>
+        <span class="color-box" style="background: rgba(255, 255, 0, 0.4)"></span>
+        Yellow
+      </label>
+      <label>
+        <input type="checkbox" id="show-pink" checked>
+        <span class="color-box" style="background: rgba(255, 192, 203, 0.4)"></span>
+        Pink
+      </label>
+      <label>
+        <input type="checkbox" id="show-green" checked>
+        <span class="color-box" style="background: rgba(144, 238, 144, 0.4)"></span>
+        Green
+      </label>
+      <label>
+        <input type="checkbox" id="show-blue" checked>
+        <span class="color-box" style="background: rgba(173, 216, 230, 0.4)"></span>
+        Blue
+      </label>
+    </div>
+  </div>
   
-  <!-- Functional Buttons -->
-  <button id="open-sidebar">Open Annotation Sidebar</button>
-  <button id="clear-highlights">Clear All Highlights</button>
-  <button id="clear-annotations">Clear All Annotations</button>
-  <button id="export-data">Export Data</button>
+  <!-- Action Buttons -->
+  <button class="action-button" id="open-sidebar">Open Annotation Sidebar</button>
+  <button class="action-button" id="clear-highlights">Clear All Highlights</button>
+  <button class="action-button" id="clear-annotations">Clear All Annotations</button>
+  <button class="action-button" id="export-data">Export Data</button>
   <input type="file" id="import-file" style="display:none;" />
-  <button id="import-data">Import Data</button>
+  <button class="action-button" id="import-data">Import Data</button>
+
+  <!-- Export Options (Hidden by default, shown when clicking export) -->
+  <div class="export-options panel">
+    <div class="filter-options">
+    <div class="filter-group">
+      <label>
+        <input type="checkbox" id="export-annotations" checked>
+        Include Annotations
+      </label>
+    </div>
+    
+    <div class="filter-group">
+      <h4>Include Highlights</h4>
+      <label>
+        <input type="checkbox" id="export-yellow" checked>
+        <span class="color-box" style="background: rgba(255, 255, 0, 0.4)"></span>
+        Yellow
+      </label>
+      <label>
+        <input type="checkbox" id="export-pink" checked>
+        <span class="color-box" style="background: rgba(255, 192, 203, 0.4)"></span>
+        Pink
+      </label>
+      <label>
+        <input type="checkbox" id="export-green" checked>
+        <span class="color-box" style="background: rgba(144, 238, 144, 0.4)"></span>
+        Green
+      </label>
+      <label>
+        <input type="checkbox" id="export-blue" checked>
+        <span class="color-box" style="background: rgba(173, 216, 230, 0.4)"></span>
+        Blue
+      </label>
+    </div>
+    <button id="confirm-export" class="action-button">Export Selected</button>
+  </div>
+
   <!-- Toggle Extension Button -->
   <button id="toggle-extension">Activate Extension</button>
   

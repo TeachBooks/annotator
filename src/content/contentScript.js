@@ -67,7 +67,7 @@ document.addEventListener("mouseup", function(event) {
       commonAncestor = commonAncestor.parentElement;
     }
 
-    const isWithinAnnotatedText = commonAncestor.closest('.annotated-annotation') !== null;
+    const isWithinAnnotatedText = commonAncestor.closest('.annotated-text') !== null;
     if (!isWithinAnnotatedText) {
       console.log("[DEBUG contentScript] Text selected outside annotated elements:", range.toString());
       showFloatingToolbar(range);
@@ -98,7 +98,7 @@ document.addEventListener("mousedown", function(event) {
 document.addEventListener("click", function(event) {
   if (!isActive) return; // Exit if the extension is not active
 
-  const annotatedElement = event.target.closest('.annotated-annotation');
+  const annotatedElement = event.target.closest('.annotated-text');
   if (annotatedElement) {
     event.preventDefault();
     event.stopPropagation();
@@ -175,6 +175,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log("[DEBUG contentScript] onMessage:", request);
   
   switch (request.action) {
+    case 'applyFilters':
+      applyVisibilityFilters(request.filters);
+      sendResponse({ status: "filters applied" });
+      return true;
+
     case 'toggleActivation':
       isActive = !isActive;
       console.log(`[DEBUG contentScript] Extension is now ${isActive ? 'active' : 'inactive'}.`);
@@ -236,6 +241,16 @@ function cleanupUI() {
   if (annotationToolbar) annotationToolbar.remove();
   const sidebar = document.getElementById("annotation-sidebar");
   if (sidebar) sidebar.style.display = "none";
+}
+
+// Apply visibility filters to highlights and annotations
+function applyVisibilityFilters(filters) {
+  // Save filter state first
+  chrome.storage.local.set({ filterState: filters }, () => {
+    console.log("[DEBUG contentScript] Filter state saved:", filters);
+    // Re-initialize to apply filters consistently
+    initialize();
+  });
 }
 
 // Set loaded flag and initialize

@@ -100,6 +100,7 @@ export function applyAnnotationHighlight(range, annotationId = null) {
   // Create the annotation span
   const span = document.createElement('span');
   span.className = 'annotated-text';
+  span.style.borderBottom = '2px solid red';
   span.setAttribute('data-annotation-id', annotationId);
   
   try {

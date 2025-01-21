@@ -3,53 +3,68 @@
 import {
     calculateFullOffsetUsingMarkers,
     getXPath,
-    findTextNode
+    findTextNode,
+    hasOverlappingHighlight,
+    hasOverlappingAnnotation
   } from './utils.js';
   
-  import { highlightText } from './highlight.js';
-  import { applyAnnotationHighlight } from './annotation.js';
+import { highlightText } from './highlight.js';
+import { applyAnnotationHighlight } from './annotation.js';
+import { showToast } from './ui.js';
   
   /**
    * ---------------------------------------------------------------------------
    * Store MULTIPLE subranges in one highlight record
    * ---------------------------------------------------------------------------
    */
-  export function saveMultiBlockHighlight(subRanges, color) {
-    // Use one ID for the entire multi-block highlight
-    const highlightId = Date.now();
-  
-    // Combine all text from subRanges for quick reference (optional)
-    const combinedText = subRanges.map(r => r.toString?.() || '').join(' ');
-  
-    const storedSubRanges = [];
-    subRanges.forEach(range => {
-      const { startOffset, endOffset } = calculateFullOffsetUsingMarkers(range);
-      storedSubRanges.push({
-        startOffset,
-        endOffset,
-        startXPath: getXPath(range.startContainer),
-        endXPath: getXPath(range.endContainer),
-      });
-    });
-  
-    const highlightData = {
-      id: highlightId,
-      text: combinedText,
-      url: window.location.href,
-      color: color,
-      subRanges: storedSubRanges
-    };
-  
-    console.log("[DEBUG storage] Saving multi-block highlight:", highlightData);
-    chrome.storage.local.get({ highlights: [] }, function(result) {
-      const highlights = result.highlights;
-      highlights.push(highlightData);
-      chrome.storage.local.set({ highlights: highlights }, function() {
-        console.log("[DEBUG storage] Multi-block highlight saved. Current highlights:", highlights);
-        initialize(); // Rebuild highlights from storage after saving
-      });
-    });
+export function saveMultiBlockHighlight(subRanges, color) {
+  // Check for overlaps before saving
+  for (const range of subRanges) {
+    if (hasOverlappingHighlight(range)) {
+      console.warn("[DEBUG storage] Cannot create overlapping highlight");
+      showToast("This feature is not yet supported: Cannot create overlapping highlights. Please select a different text region.");
+      return;
+    }
+    if (hasOverlappingAnnotation(range)) {
+      console.warn("[DEBUG storage] Cannot highlight annotated text");
+      showToast("This feature is not yet supported: Cannot highlight text that is already annotated. Please select a different text region.");
+      return;
+    }
   }
+
+  // If no overlaps, proceed with saving
+  const highlightId = Date.now();
+  const combinedText = subRanges.map(r => r.toString?.() || '').join(' ');
+
+  const storedSubRanges = [];
+  subRanges.forEach(range => {
+    const { startOffset, endOffset } = calculateFullOffsetUsingMarkers(range);
+    storedSubRanges.push({
+      startOffset,
+      endOffset,
+      startXPath: getXPath(range.startContainer),
+      endXPath: getXPath(range.endContainer),
+    });
+  });
+
+  const highlightData = {
+    id: highlightId,
+    text: combinedText,
+    url: window.location.href,
+    color: color,
+    subRanges: storedSubRanges
+  };
+
+  console.log("[DEBUG storage] Saving multi-block highlight:", highlightData);
+  chrome.storage.local.get({ highlights: [] }, function(result) {
+    const highlights = result.highlights;
+    highlights.push(highlightData);
+    chrome.storage.local.set({ highlights: highlights }, function() {
+      console.log("[DEBUG storage] Multi-block highlight saved. Current highlights:", highlights);
+      initialize(); // Rebuild highlights from storage after saving
+    });
+  });
+}
   
   /**
    * ---------------------------------------------------------------------------

@@ -3,6 +3,34 @@
 /**
  * Split text into lines for display
  */
+/**
+ * Check if a range overlaps with any existing highlights
+ * @param {Range} range Range to check
+ * @returns {boolean} True if range overlaps with any highlight
+ */
+export function hasOverlappingHighlight(range) {
+  const highlights = document.querySelectorAll('.highlighted-text');
+  return Array.from(highlights).some(highlight => {
+    const highlightRange = document.createRange();
+    highlightRange.selectNodeContents(highlight);
+    return rangesIntersect(range, highlightRange);
+  });
+}
+
+/**
+ * Check if a range overlaps with any existing annotations
+ * @param {Range} range Range to check
+ * @returns {boolean} True if range overlaps with any annotation
+ */
+export function hasOverlappingAnnotation(range) {
+  const annotations = document.querySelectorAll('.annotated-text');
+  return Array.from(annotations).some(annotation => {
+    const annotationRange = document.createRange();
+    annotationRange.selectNodeContents(annotation);
+    return rangesIntersect(range, annotationRange);
+  });
+}
+
 export function splitTextIntoLines(text, maxLineLength) {
     const lines = [];
     let start = 0;
@@ -214,4 +242,3 @@ export function splitTextIntoLines(text, maxLineLength) {
     }
     return offset;
   }
-  

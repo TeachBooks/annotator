@@ -26,6 +26,20 @@ export function highlightText(range, highlightId, color = 'yellow') {
     return;
   }
 
+  // Check for overlapping highlights
+  if (hasOverlappingHighlight(range)) {
+    console.warn("[DEBUG highlightText] Cannot create overlapping highlight");
+    throw new Error("Cannot create overlapping highlights. Please select a different text region.");
+    return;
+  }
+
+  // Check for overlapping annotations
+  if (hasOverlappingAnnotation(range)) {
+    console.warn("[DEBUG highlightText] Cannot highlight annotated text");
+    throw new Error("Cannot highlight text that is already annotated. Please select a different text region.");
+    return;
+  }
+
   console.log(`[DEBUG highlightText] Highlighting text: "${range.toString()}" with color "${color}" and ID "${highlightId}"`);
 
   try {

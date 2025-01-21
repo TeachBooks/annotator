@@ -135,16 +135,34 @@
 }
 
 .annotated-text {
-    text-decoration: underline;
-    text-decoration-color: #ff0000; /* Optional: Set underline color */
-    text-decoration-thickness: 2px; /* Optional: Set underline thickness */
-    cursor: pointer; /* Optional: Change cursor to indicate interactivity */
+    border-bottom: 2px solid #4a90e2;
+    background-color: rgba(74, 144, 226, 0.1);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    position: relative;
+    display: inline;
 }
 
-.annotated-annotation {
-    text-decoration: underline;
-    text-decoration-color: red;
-    background-color: transparent !important; /* Ensure no background */
+.annotated-text:hover {
+    background-color: rgba(74, 144, 226, 0.2);
+}
+
+/* Error states for invalid selections */
+.selection-error {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Prevent text selection during error animation */
+.selection-error * {
+    user-select: none !important;
 }
 
 /* Highlight styles */

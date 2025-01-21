@@ -5,7 +5,10 @@ import {
   splitRangeByBlockElements,
   calculateFullOffsetUsingMarkers,
   getXPath,
-  findTextNode
+  findTextNode,
+  hasOverlappingHighlight,
+  hasOverlappingAnnotation,
+  rangesIntersect
 } from './utils.js';
 import { highlightText } from './highlight.js';
 import {
@@ -78,8 +81,35 @@ export function applyAnnotationHighlight(range, annotationId = null) {
     return;
   }
 
+  // Check for overlapping highlights
+  if (hasOverlappingHighlight(range)) {
+    console.warn("[DEBUG applyAnnotationHighlight] Cannot annotate highlighted text");
+    showToast("This feature is not yet supported: Cannot annotate text that is already highlighted. Please select a different text region.");
+    return;
+  }
+
+  // Check for overlapping annotations
+  if (hasOverlappingAnnotation(range)) {
+    console.warn("[DEBUG applyAnnotationHighlight] Cannot create overlapping annotation");
+    showToast("This feature is not yet supported: Cannot create overlapping annotations. Please select a different text region.");
+    return;
+  }
+
   console.log(`[DEBUG applyAnnotationHighlight] Underlining text: "${range.toString()}" annotation ID: ${annotationId}`);
-  // Instead of manipulating DOM directly, just return the range info
+  
+  // Create the annotation span
+  const span = document.createElement('span');
+  span.className = 'annotated-text';
+  span.setAttribute('data-annotation-id', annotationId);
+  
+  try {
+    // Wrap the range with the annotation span
+    range.surroundContents(span);
+  } catch (error) {
+    console.error("[DEBUG applyAnnotationHighlight] Error wrapping range:", error);
+    throw new Error("Could not create annotation. The selected text may cross HTML elements.");
+  }
+  
   return {
     range: range,
     id: annotationId
@@ -128,8 +158,36 @@ export function removeAnnotationById(annotationId, annotatedElement) {
 export function openAnnotationSidebar(selectedText, range) {
   console.log("[DEBUG annotation.js] Annotate button clicked, selected text:", selectedText);
 
+  // Check for overlaps before proceeding
+  if (hasOverlappingHighlight(range)) {
+    console.warn("[DEBUG annotation.js] Cannot annotate highlighted text");
+    showToast("This feature is not yet supported: Cannot annotate text that is already highlighted. Please select a different text region.");
+    return;
+  }
+
+  if (hasOverlappingAnnotation(range)) {
+    console.warn("[DEBUG annotation.js] Cannot create overlapping annotation");
+    showToast("This feature is not yet supported: Cannot create overlapping annotations. Please select a different text region.");
+    return;
+  }
+
   // We'll handle multi-block annotation too
   const subRanges = splitRangeByBlockElements(range);
+  
+  // Check each subRange for overlaps
+  for (const subRange of subRanges) {
+    if (hasOverlappingHighlight(subRange)) {
+      console.warn("[DEBUG annotation.js] Cannot annotate highlighted text in subrange");
+      showToast("This feature is not yet supported: Cannot annotate text that is already highlighted. Please select a different text region.");
+      return;
+    }
+    if (hasOverlappingAnnotation(subRange)) {
+      console.warn("[DEBUG annotation.js] Cannot create overlapping annotation in subrange");
+      showToast("This feature is not yet supported: Cannot create overlapping annotations. Please select a different text region.");
+      return;
+    }
+  }
+
   const combinedText = subRanges.map(r => r.toString()).join(' ');
 
   // Build subRanges data
@@ -143,33 +201,70 @@ export function openAnnotationSidebar(selectedText, range) {
     };
   });
 
-  const annotationData = {
-    id: Date.now(),
-    text: combinedText,
-    url: window.location.href,
-    subRanges: storedSubRanges,
-    annotationText: ""
-  };
+  // Save annotation to storage
+  chrome.storage.local.get({ annotations: [] }, function(result) {
+    // Check if any existing annotations overlap with our ranges
+    const existingAnnotations = result.annotations;
+    for (const existing of existingAnnotations) {
+      if (existing.url === window.location.href) {
+        for (const existingSubRange of existing.subRanges) {
+          const existingRange = document.createRange();
+          const startContainer = findTextNode(existingSubRange.startXPath);
+          const endContainer = findTextNode(existingSubRange.endXPath);
+          if (startContainer && endContainer) {
+            existingRange.setStart(startContainer, existingSubRange.startOffset);
+            existingRange.setEnd(endContainer, existingSubRange.endOffset);
+            
+            // Check if any of our subRanges overlap with this existing range
+            for (const subRange of subRanges) {
+              if (rangesIntersect(subRange, existingRange)) {
+                console.warn("[DEBUG annotation.js] Cannot create overlapping annotation");
+                showToast("This feature is not yet supported: Cannot create overlapping annotations. Please select a different text region.");
+                return;
+              }
+            }
+          }
+        }
+      }
+    }
 
-  console.log("[DEBUG annotation.js] Annotation data prepared:", JSON.stringify(annotationData, null, 2));
+    // If no overlaps found, proceed with saving
+    const annotationData = {
+      id: Date.now(),
+      text: combinedText,
+      url: window.location.href,
+      subRanges: storedSubRanges,
+      annotationText: ""
+    };
 
-  loadSidebar(() => {
-    const sidebar = document.getElementById("annotation-sidebar");
-    if (!sidebar) {
-      console.error("[ERROR annotation.js] Annotation sidebar not found after loading.");
-      return;
-    }
-    sidebar.style.display = "block";
-    const annotationTextElement = document.querySelector(".annotation-text");
-    if (annotationTextElement) {
-      displayAnnotationText(selectedText, annotationTextElement);
-    }
-    const editorContainer = document.getElementById('editor-container');
-    if (editorContainer) {
-      editorContainer.style.display = 'block';
-    }
-    window.annotationData = annotationData;
-    displayExistingAnnotations();
+    console.log("[DEBUG annotation.js] Annotation data prepared:", JSON.stringify(annotationData, null, 2));
+
+    // Add to storage and open sidebar
+    existingAnnotations.push(annotationData);
+    chrome.storage.local.set({ annotations: existingAnnotations }, function() {
+      console.log("[DEBUG annotation.js] Annotation saved to storage");
+      initialize(); // Rebuild from storage
+
+      // Open sidebar
+      loadSidebar(() => {
+        const sidebar = document.getElementById("annotation-sidebar");
+        if (!sidebar) {
+          console.error("[ERROR annotation.js] Annotation sidebar not found after loading.");
+          return;
+        }
+        sidebar.style.display = "block";
+        const annotationTextElement = document.querySelector(".annotation-text");
+        if (annotationTextElement) {
+          displayAnnotationText(selectedText, annotationTextElement);
+        }
+        const editorContainer = document.getElementById('editor-container');
+        if (editorContainer) {
+          editorContainer.style.display = 'block';
+        }
+        window.annotationData = annotationData;
+        displayExistingAnnotations();
+      });
+    });
   });
 }
 

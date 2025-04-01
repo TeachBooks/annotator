@@ -1,5 +1,3 @@
-# Local Annotator Extension
-
 ````{margin}
 ```{attributiongrey} Attribution
 :class: attribution
@@ -18,6 +16,8 @@ This page is useful for all user types, although explicitly designed for student
 This tool is still in development
 ```
 ````
+
+# Local Annotator Extension
 
 A tool for making annotations on websites, with the primary application for use with online interactive textbooks. This extension provides students, readers and anyone with the ability to use an online textbook in a similar way as a paper book: highlight text and make notes in the margins. The extension is developed by the TeachBooks team (info@teachbooks.io)
 
